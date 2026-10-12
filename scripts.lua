@@ -26,7 +26,7 @@ getgenv().AutoBrawl = false
 local MainTab = Window:CreateTab("Dashboard", 4483362458)
 
 MainTab:CreateSection("Estado del Script")
-MainTab:CreateLabel("Script activo y seguro ✅")
+MainTab:CreateLabel("Script optimizado y seguro ✅")
 
 MainTab:CreateButton({
    Name = "Cerrar Interfaz",
@@ -39,14 +39,14 @@ MainTab:CreateButton({
 })
 
 --------------------------------------------------------------------------------
--- PESTAÑA 2: AUTO FARM & REBIRTH (CORREGIDO)
+-- PESTAÑA 2: AUTO FARM & REBIRTH (OPTIMIZADO)
 --------------------------------------------------------------------------------
 local FarmTab = Window:CreateTab("Auto Farm", 4483362458)
 
 FarmTab:CreateSection("Entrenamiento Seguro")
 
 FarmTab:CreateToggle({
-   Name = "⚡ Auto Entrenar (Sin Kick)",
+   Name = "⚡ Auto Usar Pesa / Herramienta",
    CurrentValue = false,
    Flag = "ToggleAutoFarm",
    Callback = function(Value)
@@ -54,18 +54,17 @@ FarmTab:CreateToggle({
       
       task.spawn(function()
          while getgenv().AutoFarm do
-            task.wait(0.1) -- Tiempo de espera seguro para evitar deteccion de cheating
+            task.wait(0.2) -- Un margen de tiempo más seguro para que el anticheat no te expulse
             local player = game.Players.LocalPlayer
             local char = player.Character
             if char then
                local tool = char:FindFirstChildOfClass("Tool")
-               if tool then
+               -- Verificamos que tenga una herramienta de entrenamiento (evita que golpee al aire)
+               if tool and (tool.Name:lower():find("weight") or tool.Name:lower():find("pushups") or tool.Name:lower():find("handstands") or tool.Name:lower():find("dumbells") or tool:FindFirstChild("rep")) then
                   tool:Activate()
-               end
-               -- Disparo de evento seguro de fuerza
-               local muscleEvent = player:FindFirstChild("muscleEvent") or char:FindFirstChild("muscleEvent")
-               if muscleEvent then
-                  muscleEvent:FireServer("rep")
+               elseif tool and not tool.Name:lower():find("punch") then
+                  -- Por si usa otra herramienta de estadísticas general
+                  tool:Activate()
                end
             end
          end
@@ -84,7 +83,7 @@ FarmTab:CreateToggle({
       
       task.spawn(function()
          while getgenv().AutoRebirth do
-            task.wait(0.5)
+            task.wait(1)
             local rEvents = game:GetService("ReplicatedStorage"):FindFirstChild("rEvents")
             if rEvents and rEvents:FindFirstChild("rebirthRemote") then
                rEvents.rebirthRemote:InvokeServer("rebirthRequest")
@@ -103,7 +102,7 @@ FarmTab:CreateToggle({
       
       task.spawn(function()
          while getgenv().AutoBrawl do
-            task.wait(1)
+            task.wait(2)
             local rEvents = game:GetService("ReplicatedStorage"):FindFirstChild("rEvents")
             if rEvents and rEvents:FindFirstChild("brawlEvent") then
                rEvents.brawlEvent:FireServer("joinBrawl")
@@ -114,18 +113,17 @@ FarmTab:CreateToggle({
 })
 
 --------------------------------------------------------------------------------
--- PESTAÑA 3: TELEPORTS (CORREGIDOS Y SEGUROS)
+-- PESTAÑA 3: TELEPORTS
 --------------------------------------------------------------------------------
 local TeleportTab = Window:CreateTab("Teleports", 4483362458)
 
-TeleportTab:CreateSection("Gimnasios (Coordenadas Seguras)")
+TeleportTab:CreateSection("Gimnasios")
 
--- Función de Teleport segura que evita la caída al vacío y el kick
 local function safeTeleport(targetCFrame)
    local char = game.Players.LocalPlayer.Character
    if char and char:FindFirstChild("HumanoidRootPart") then
       local root = char.HumanoidRootPart
-      root.Velocity = Vector3.new(0, 0, 0) -- Frena la caída previa
+      root.Velocity = Vector3.new(0, 0, 0)
       task.wait(0.05)
       root.CFrame = targetCFrame
    end

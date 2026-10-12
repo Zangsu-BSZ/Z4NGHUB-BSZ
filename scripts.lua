@@ -26,7 +26,7 @@ getgenv().AutoBrawl = false
 local MainTab = Window:CreateTab("Dashboard", 4483362458)
 
 MainTab:CreateSection("Estado del Script")
-MainTab:CreateLabel("Modo Remoto Pro Activado 🔥")
+MainTab:CreateLabel("Script optimizado anti BAC-6206 ✅")
 
 MainTab:CreateButton({
    Name = "Cerrar Interfaz",
@@ -39,14 +39,14 @@ MainTab:CreateButton({
 })
 
 --------------------------------------------------------------------------------
--- PESTAÑA 2: AUTO FARM (MÉTODO DE REMOTOS PUROS - SIN HERRAMIENTA)
+-- PESTAÑA 2: AUTO FARM & REBIRTH (BYPASS BAC-6206)
 --------------------------------------------------------------------------------
 local FarmTab = Window:CreateTab("Auto Farm", 4483362458)
 
-FarmTab:CreateSection("Entrenamiento por Paquetes de Red")
+FarmTab:CreateSection("Entrenamiento Seguro")
 
 FarmTab:CreateToggle({
-   Name = "⚡ Auto Fuerza Puro (Sin Herramienta)",
+   Name = "⚡ Auto Entrenar (Bypass Anticheat)",
    CurrentValue = false,
    Flag = "ToggleAutoFarm",
    Callback = function(Value)
@@ -54,15 +54,24 @@ FarmTab:CreateToggle({
       
       task.spawn(function()
          while getgenv().AutoFarm do
-            task.wait(0.05) -- Velocidad fluida
+            task.wait(0.18) -- Intervalo seguro para evadir BAC-6206
+            
             pcall(function()
-               -- Método directo al servidor de Muscle Legends
-               local rEvents = game:GetService("ReplicatedStorage"):FindFirstChild("rEvents")
-               if rEvents then
-                  -- Intenta disparar los remotos comunes de fuerza y repeticiones
-                  local strengthRemote = rEvents:FindFirstChild("swings") or rEvents:FindFirstChild("updateStrength")
-                  if strengthRemote then
-                     strengthRemote:FireServer()
+               local player = game.Players.LocalPlayer
+               local char = player.Character
+               
+               if char then
+                  local tool = char:FindFirstChildOfClass("Tool")
+                  
+                  if tool then
+                     -- Activa la herramienta equipada de manera nativa
+                     tool:Activate()
+                     
+                     -- Evento interno de la herramienta
+                     local muscleEvent = tool:FindFirstChild("muscleEvent") or char:FindFirstChild("muscleEvent")
+                     if muscleEvent then
+                        muscleEvent:FireServer("rep")
+                     end
                   end
                end
             end)
@@ -82,7 +91,7 @@ FarmTab:CreateToggle({
       
       task.spawn(function()
          while getgenv().AutoRebirth do
-            task.wait(1)
+            task.wait(1.5)
             pcall(function()
                local rEvents = game:GetService("ReplicatedStorage"):FindFirstChild("rEvents")
                if rEvents and rEvents:FindFirstChild("rebirthRemote") then
@@ -103,7 +112,7 @@ FarmTab:CreateToggle({
       
       task.spawn(function()
          while getgenv().AutoBrawl do
-            task.wait(2)
+            task.wait(2.5)
             pcall(function()
                local rEvents = game:GetService("ReplicatedStorage"):FindFirstChild("rEvents")
                if rEvents and rEvents:FindFirstChild("brawlEvent") then
@@ -116,22 +125,25 @@ FarmTab:CreateToggle({
 })
 
 --------------------------------------------------------------------------------
--- PESTAÑA 3: TELEPORTS SEGUROS
+-- PESTAÑA 3: TELEPORTS (ANTIKICK)
 --------------------------------------------------------------------------------
 local TeleportTab = Window:CreateTab("Teleports", 4483362458)
 
 TeleportTab:CreateSection("Gimnasios")
 
 local function safeTeleport(targetCFrame)
-   local char = game.Players.LocalPlayer.Character
-   if char and char:FindFirstChild("HumanoidRootPart") then
-      local root = char.HumanoidRootPart
-      root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-      task.wait(0.05)
-      root.CFrame = targetCFrame
-      task.wait(0.05)
-      root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-   end
+   pcall(function()
+      local char = game.Players.LocalPlayer.Character
+      if char and char:FindFirstChild("HumanoidRootPart") then
+         local root = char.HumanoidRootPart
+         root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+         root.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+         task.wait(0.08)
+         root.CFrame = targetCFrame
+         task.wait(0.08)
+         root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+      end
+   end)
 end
 
 TeleportTab:CreateButton({

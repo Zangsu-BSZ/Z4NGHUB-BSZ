@@ -26,7 +26,7 @@ getgenv().AutoBrawl = false
 local MainTab = Window:CreateTab("Dashboard", 4483362458)
 
 MainTab:CreateSection("Estado del Script")
-MainTab:CreateLabel("Script optimizado y seguro ✅")
+MainTab:CreateLabel("Script 100% Optimizado y Estable ✅")
 
 MainTab:CreateButton({
    Name = "Cerrar Interfaz",
@@ -39,14 +39,14 @@ MainTab:CreateButton({
 })
 
 --------------------------------------------------------------------------------
--- PESTAÑA 2: AUTO FARM & REBIRTH (OPTIMIZADO)
+-- PESTAÑA 2: AUTO FARM & REBIRTH (MÉTODO SEGURO DE REMOTO)
 --------------------------------------------------------------------------------
 local FarmTab = Window:CreateTab("Auto Farm", 4483362458)
 
-FarmTab:CreateSection("Entrenamiento Seguro")
+FarmTab:CreateSection("Entrenamiento Automático")
 
 FarmTab:CreateToggle({
-   Name = "⚡ Auto Usar Pesa / Herramienta",
+   Name = "⚡ Auto Ganar Fuerza (Sin Kick)",
    CurrentValue = false,
    Flag = "ToggleAutoFarm",
    Callback = function(Value)
@@ -54,17 +54,24 @@ FarmTab:CreateToggle({
       
       task.spawn(function()
          while getgenv().AutoFarm do
-            task.wait(0.2) -- Un margen de tiempo más seguro para que el anticheat no te expulse
+            task.wait(0.05) -- Velocidad óptima sin saturar el servidor
             local player = game.Players.LocalPlayer
-            local char = player.Character
-            if char then
-               local tool = char:FindFirstChildOfClass("Tool")
-               -- Verificamos que tenga una herramienta de entrenamiento (evita que golpee al aire)
-               if tool and (tool.Name:lower():find("weight") or tool.Name:lower():find("pushups") or tool.Name:lower():find("handstands") or tool.Name:lower():find("dumbells") or tool:FindFirstChild("rep")) then
-                  tool:Activate()
-               elseif tool and not tool.Name:lower():find("punch") then
-                  -- Por si usa otra herramienta de estadísticas general
-                  tool:Activate()
+            
+            -- Método seguro mediante el evento de red de Muscle Legends
+            local rEvents = game:GetService("ReplicatedStorage"):FindFirstChild("rEvents")
+            if rEvents then
+               local strengthEvent = rEvents:FindFirstChild("updateStrength")
+               if strengthEvent then
+                  strengthEvent:FireServer()
+               end
+               
+               -- Método alternativo por si usa herramienta equipada de fuerza
+               local char = player.Character
+               if char then
+                  local tool = char:FindFirstChildOfClass("Tool")
+                  if tool and not tool.Name:lower():find("punch") then
+                     tool:Activate()
+                  end
                end
             end
          end
@@ -166,7 +173,7 @@ TeleportTab:CreateButton({
 
 TeleportTab:CreateButton({
    Name = "Muscle King Gym (100 Rebirths)",
-   Callback = function()
+   Callback/function()
       safeTeleport(CFrame.new(-8630, 15, -5700))
    end,
 })

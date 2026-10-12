@@ -11,50 +11,103 @@ local Window = Rayfield:CreateWindow({
       FolderName = "Z4ngHubConfig",
       FileName = "MuscleLegends"
    },
-   KeySystem = false -- Lo dejamos sin clave por ahora para probar
+   KeySystem = false
 })
 
 --------------------------------------------------------------------------------
--- PESTAÑA 1: DASHBOARD / INICIO
+-- VARIABLES GLOBALES
 --------------------------------------------------------------------------------
-local MainTab = Window:CreateTab("Dashboard", 4483362458) -- Icono de inicio
+getgenv().AutoFarm = false
+getgenv().AutoRebirth = false
+getgenv().AutoBrawl = false
 
-MainTab:CreateSection("Bienvenido a Z4NG BSZ HUB")
+--------------------------------------------------------------------------------
+-- PESTAÑA 1: DASHBOARD
+--------------------------------------------------------------------------------
+local MainTab = Window:CreateTab("Dashboard", 4483362458)
 
-MainTab:CreateLabel("Script activo para Muscle Legends")
+MainTab:CreateSection("Estado del Script")
+MainTab:CreateLabel("Script activo y funcional para Muscle Legends 🔥")
 
 MainTab:CreateButton({
-   Name = "Destruir Interfaz (Cerrar)",
+   Name = "Cerrar Interfaz",
    Callback = function()
+      getgenv().AutoFarm = false
+      getgenv().AutoRebirth = false
+      getgenv().AutoBrawl = false
       Rayfield:Destroy()
    end,
 })
 
 --------------------------------------------------------------------------------
--- PESTAÑA 2: AUTO FARM
+-- PESTAÑA 2: AUTO FARM & REBIRTH (LO MÁS IMPORTANTE)
 --------------------------------------------------------------------------------
 local FarmTab = Window:CreateTab("Auto Farm", 4483362458)
 
-FarmTab:CreateSection("Entrenamiento Automático")
-
--- Variable para controlar el Auto Farm de Pesas
-getgenv().AutoWeight = false
+FarmTab:CreateSection("Entrenamiento Rápido")
 
 FarmTab:CreateToggle({
-   Name = "Auto Levantar Pesas",
+   Name = "⚡ Auto Entrenar / Usar Herramienta",
    CurrentValue = false,
-   Flag = "TogglePesas",
+   Flag = "ToggleAutoFarm",
    Callback = function(Value)
-      getgenv().AutoWeight = Value
+      getgenv().AutoFarm = Value
       
-      -- Bucle para entrenar
       task.spawn(function()
-         while getgenv().AutoWeight do
-            task.wait(0.1)
-            -- Aquí irá la lógica para usar la pesa automáticamente
+         while getgenv().AutoFarm do
+            task.wait()
             local char = game.Players.LocalPlayer.Character
-            if char and char:FindFirstChildOfClass("Tool") then
-               char:FindFirstChildOfClass("Tool"):Activate()
+            if char then
+               -- Activa la herramienta equipada (pesa, empujones, etc.)
+               local tool = char:FindFirstChildOfClass("Tool")
+               if tool then
+                  tool:Activate()
+               end
+            end
+         end
+      end)
+   end,
+})
+
+FarmTab:CreateSection("Renacimientos Automáticos")
+
+FarmTab:CreateToggle({
+   Name = "🔄 Auto Rebirth",
+   CurrentValue = false,
+   Flag = "ToggleAutoRebirth",
+   Callback = function(Value)
+      getgenv().AutoRebirth = Value
+      
+      task.spawn(function()
+         while getgenv().AutoRebirth do
+            task.wait(0.5)
+            -- Remoto de Rebirth oficial de Muscle Legends
+            local rebirthRemote = game:GetService("ReplicatedStorage"):FindFirstChild("rEvents") 
+               and game:GetService("ReplicatedStorage").rEvents:FindFirstChild("rebirthRemote")
+            
+            if rebirthRemote then
+               rebirthRemote:InvokeServer("rebirthRequest")
+            end
+         end
+      end)
+   end,
+})
+
+FarmTab:CreateToggle({
+   Name = "🥊 Auto Join Brawl (Peleas)",
+   CurrentValue = false,
+   Flag = "ToggleAutoBrawl",
+   Callback = function(Value)
+      getgenv().AutoBrawl = Value
+      
+      task.spawn(function()
+         while getgenv().AutoBrawl do
+            task.wait(1)
+            local brawlRemote = game:GetService("ReplicatedStorage"):FindFirstChild("rEvents") 
+               and game:GetService("ReplicatedStorage").rEvents:FindFirstChild("brawlEvent")
+            
+            if brawlRemote then
+               brawlRemote:FireServer("joinBrawl")
             end
          end
       end)
@@ -62,15 +115,50 @@ FarmTab:CreateToggle({
 })
 
 --------------------------------------------------------------------------------
--- PESTAÑA 3: TELEPORTS / ZONAS
+-- PESTAÑA 3: TELEPORTS
 --------------------------------------------------------------------------------
 local TeleportTab = Window:CreateTab("Teleports", 4483362458)
 
-TeleportTab:CreateSection("Gimnasios y Zonas")
+TeleportTab:CreateSection("Gimnasios Principales")
+
+local function teleportTo(cframe)
+   local char = game.Players.LocalPlayer.Character
+   if char and char:FindFirstChild("HumanoidRootPart") then
+      char.HumanoidRootPart.CFrame = cframe
+   end
+end
 
 TeleportTab:CreateButton({
-   Name = "Teleport a Spawn (Gimnasio Principal)",
+   Name = "Spawn Main Gym",
    Callback = function()
-      game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(0, 5, 0)
+      teleportTo(CFrame.new(0, 8, 0))
+   end,
+})
+
+TeleportTab:CreateButton({
+   Name = "Frost Gym (5 Rebirths)",
+   Callback = function()
+      teleportTo(CFrame.new(-2602, 8, -408))
+   end,
+})
+
+TeleportTab:CreateButton({
+   Name = "Mythical Gym (15 Rebirths)",
+   Callback = function()
+      teleportTo(CFrame.new(2250, 8, 1070))
+   end,
+})
+
+TeleportTab:CreateButton({
+   Name = "Eternal Gym (30 Rebirths)",
+   Callback = function()
+      teleportTo(CFrame.new(-6730, 8, -1280))
+   end,
+})
+
+TeleportTab:CreateButton({
+   Name = "Legend Gym (60 Rebirths)",
+   Callback = function()
+      teleportTo(CFrame.new(4612, 8, -3890))
    end,
 })

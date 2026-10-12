@@ -1,7 +1,6 @@
--- Cargamos la librería de interfaz profesional (Rayfield)
+-- Cargamos la librería de interfaz (Rayfield)
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Creamos la Ventana Principal
 local Window = Rayfield:CreateWindow({
    Name = ">Z4NG BSZ HUB< | Muscle Legends",
    LoadingTitle = "Cargando Z4NG BSZ HUB...",
@@ -27,7 +26,7 @@ getgenv().AutoBrawl = false
 local MainTab = Window:CreateTab("Dashboard", 4483362458)
 
 MainTab:CreateSection("Estado del Script")
-MainTab:CreateLabel("Script activo y funcional para Muscle Legends 🔥")
+MainTab:CreateLabel("Script activo y seguro ✅")
 
 MainTab:CreateButton({
    Name = "Cerrar Interfaz",
@@ -40,14 +39,14 @@ MainTab:CreateButton({
 })
 
 --------------------------------------------------------------------------------
--- PESTAÑA 2: AUTO FARM & REBIRTH (LO MÁS IMPORTANTE)
+-- PESTAÑA 2: AUTO FARM & REBIRTH (CORREGIDO)
 --------------------------------------------------------------------------------
 local FarmTab = Window:CreateTab("Auto Farm", 4483362458)
 
-FarmTab:CreateSection("Entrenamiento Rápido")
+FarmTab:CreateSection("Entrenamiento Seguro")
 
 FarmTab:CreateToggle({
-   Name = "⚡ Auto Entrenar / Usar Herramienta",
+   Name = "⚡ Auto Entrenar (Sin Kick)",
    CurrentValue = false,
    Flag = "ToggleAutoFarm",
    Callback = function(Value)
@@ -55,13 +54,18 @@ FarmTab:CreateToggle({
       
       task.spawn(function()
          while getgenv().AutoFarm do
-            task.wait()
-            local char = game.Players.LocalPlayer.Character
+            task.wait(0.1) -- Tiempo de espera seguro para evitar deteccion de cheating
+            local player = game.Players.LocalPlayer
+            local char = player.Character
             if char then
-               -- Activa la herramienta equipada (pesa, empujones, etc.)
                local tool = char:FindFirstChildOfClass("Tool")
                if tool then
                   tool:Activate()
+               end
+               -- Disparo de evento seguro de fuerza
+               local muscleEvent = player:FindFirstChild("muscleEvent") or char:FindFirstChild("muscleEvent")
+               if muscleEvent then
+                  muscleEvent:FireServer("rep")
                end
             end
          end
@@ -81,12 +85,9 @@ FarmTab:CreateToggle({
       task.spawn(function()
          while getgenv().AutoRebirth do
             task.wait(0.5)
-            -- Remoto de Rebirth oficial de Muscle Legends
-            local rebirthRemote = game:GetService("ReplicatedStorage"):FindFirstChild("rEvents") 
-               and game:GetService("ReplicatedStorage").rEvents:FindFirstChild("rebirthRemote")
-            
-            if rebirthRemote then
-               rebirthRemote:InvokeServer("rebirthRequest")
+            local rEvents = game:GetService("ReplicatedStorage"):FindFirstChild("rEvents")
+            if rEvents and rEvents:FindFirstChild("rebirthRemote") then
+               rEvents.rebirthRemote:InvokeServer("rebirthRequest")
             end
          end
       end)
@@ -94,7 +95,7 @@ FarmTab:CreateToggle({
 })
 
 FarmTab:CreateToggle({
-   Name = "🥊 Auto Join Brawl (Peleas)",
+   Name = "🥊 Auto Join Brawl",
    CurrentValue = false,
    Flag = "ToggleAutoBrawl",
    Callback = function(Value)
@@ -103,11 +104,9 @@ FarmTab:CreateToggle({
       task.spawn(function()
          while getgenv().AutoBrawl do
             task.wait(1)
-            local brawlRemote = game:GetService("ReplicatedStorage"):FindFirstChild("rEvents") 
-               and game:GetService("ReplicatedStorage").rEvents:FindFirstChild("brawlEvent")
-            
-            if brawlRemote then
-               brawlRemote:FireServer("joinBrawl")
+            local rEvents = game:GetService("ReplicatedStorage"):FindFirstChild("rEvents")
+            if rEvents and rEvents:FindFirstChild("brawlEvent") then
+               rEvents.brawlEvent:FireServer("joinBrawl")
             end
          end
       end)
@@ -115,50 +114,61 @@ FarmTab:CreateToggle({
 })
 
 --------------------------------------------------------------------------------
--- PESTAÑA 3: TELEPORTS
+-- PESTAÑA 3: TELEPORTS (CORREGIDOS Y SEGUROS)
 --------------------------------------------------------------------------------
 local TeleportTab = Window:CreateTab("Teleports", 4483362458)
 
-TeleportTab:CreateSection("Gimnasios Principales")
+TeleportTab:CreateSection("Gimnasios (Coordenadas Seguras)")
 
-local function teleportTo(cframe)
+-- Función de Teleport segura que evita la caída al vacío y el kick
+local function safeTeleport(targetCFrame)
    local char = game.Players.LocalPlayer.Character
    if char and char:FindFirstChild("HumanoidRootPart") then
-      char.HumanoidRootPart.CFrame = cframe
+      local root = char.HumanoidRootPart
+      root.Velocity = Vector3.new(0, 0, 0) -- Frena la caída previa
+      task.wait(0.05)
+      root.CFrame = targetCFrame
    end
 end
 
 TeleportTab:CreateButton({
-   Name = "Spawn Main Gym",
+   Name = "Spawn Gym (Inicio)",
    Callback = function()
-      teleportTo(CFrame.new(0, 8, 0))
+      safeTeleport(CFrame.new(0, 10, 0))
    end,
 })
 
 TeleportTab:CreateButton({
    Name = "Frost Gym (5 Rebirths)",
    Callback = function()
-      teleportTo(CFrame.new(-2602, 8, -408))
+      safeTeleport(CFrame.new(-2598, 15, -406))
    end,
 })
 
 TeleportTab:CreateButton({
    Name = "Mythical Gym (15 Rebirths)",
    Callback = function()
-      teleportTo(CFrame.new(2250, 8, 1070))
+      safeTeleport(CFrame.new(2250, 15, 1070))
    end,
 })
 
 TeleportTab:CreateButton({
    Name = "Eternal Gym (30 Rebirths)",
    Callback = function()
-      teleportTo(CFrame.new(-6730, 8, -1280))
+      safeTeleport(CFrame.new(-6730, 15, -1280))
    end,
 })
 
 TeleportTab:CreateButton({
    Name = "Legend Gym (60 Rebirths)",
    Callback = function()
-      teleportTo(CFrame.new(4612, 8, -3890))
+      safeTeleport(CFrame.new(4612, 15, -3890))
+   end,
+})
+
+TeleportTab:CreateButton({
+   Name = "Muscle King Gym (100 Rebirths)",
+   Callback = function()
+      safeTeleport(CFrame.new(-8630, 15, -5700))
    end,
 })

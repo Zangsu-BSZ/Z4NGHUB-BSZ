@@ -26,7 +26,7 @@ getgenv().AutoBrawl = false
 local MainTab = Window:CreateTab("Dashboard", 4483362458)
 
 MainTab:CreateSection("Estado del Script")
-MainTab:CreateLabel("Script 100% Optimizado y Estable ✅")
+MainTab:CreateLabel("Script definitivo y anti-kick ✅")
 
 MainTab:CreateButton({
    Name = "Cerrar Interfaz",
@@ -39,14 +39,14 @@ MainTab:CreateButton({
 })
 
 --------------------------------------------------------------------------------
--- PESTAÑA 2: AUTO FARM & REBIRTH (MÉTODO SEGURO DE REMOTO)
+-- PESTAÑA 2: AUTO FARM & REBIRTH (MÉTODO CLASE REAL)
 --------------------------------------------------------------------------------
 local FarmTab = Window:CreateTab("Auto Farm", 4483362458)
 
 FarmTab:CreateSection("Entrenamiento Automático")
 
 FarmTab:CreateToggle({
-   Name = "⚡ Auto Ganar Fuerza (Sin Kick)",
+   Name = "⚡ Auto Entrenar (Equipa tu Pesa)",
    CurrentValue = false,
    Flag = "ToggleAutoFarm",
    Callback = function(Value)
@@ -54,24 +54,16 @@ FarmTab:CreateToggle({
       
       task.spawn(function()
          while getgenv().AutoFarm do
-            task.wait(0.05) -- Velocidad óptima sin saturar el servidor
+            task.wait(0.3) -- Velocidad balanceada para que no salte el anticheat
             local player = game.Players.LocalPlayer
-            
-            -- Método seguro mediante el evento de red de Muscle Legends
-            local rEvents = game:GetService("ReplicatedStorage"):FindFirstChild("rEvents")
-            if rEvents then
-               local strengthEvent = rEvents:FindFirstChild("updateStrength")
-               if strengthEvent then
-                  strengthEvent:FireServer()
-               end
-               
-               -- Método alternativo por si usa herramienta equipada de fuerza
-               local char = player.Character
-               if char then
-                  local tool = char:FindFirstChildOfClass("Tool")
-                  if tool and not tool.Name:lower():find("punch") then
+            local char = player.Character
+            if char then
+               local tool = char:FindFirstChildOfClass("Tool")
+               if tool then
+                  -- Simula el uso legítimo de la herramienta equipada sin golpear al aire
+                  pcall(function()
                      tool:Activate()
-                  end
+                  end)
                end
             end
          end
@@ -93,7 +85,9 @@ FarmTab:CreateToggle({
             task.wait(1)
             local rEvents = game:GetService("ReplicatedStorage"):FindFirstChild("rEvents")
             if rEvents and rEvents:FindFirstChild("rebirthRemote") then
-               rEvents.rebirthRemote:InvokeServer("rebirthRequest")
+               pcall(function()
+                  rEvents.rebirthRemote:InvokeServer("rebirthRequest")
+               end)
             end
          end
       end)
@@ -112,7 +106,9 @@ FarmTab:CreateToggle({
             task.wait(2)
             local rEvents = game:GetService("ReplicatedStorage"):FindFirstChild("rEvents")
             if rEvents and rEvents:FindFirstChild("brawlEvent") then
-               rEvents.brawlEvent:FireServer("joinBrawl")
+               pcall(function()
+                  rEvents.brawlEvent:FireServer("joinBrawl")
+               end)
             end
          end
       end)
@@ -120,7 +116,7 @@ FarmTab:CreateToggle({
 })
 
 --------------------------------------------------------------------------------
--- PESTAÑA 3: TELEPORTS
+-- PESTAÑA 3: TELEPORTS (SEGUROS CONTRA VACÍO)
 --------------------------------------------------------------------------------
 local TeleportTab = Window:CreateTab("Teleports", 4483362458)
 
@@ -128,11 +124,20 @@ TeleportTab:CreateSection("Gimnasios")
 
 local function safeTeleport(targetCFrame)
    local char = game.Players.LocalPlayer.Character
-   if char and char:FindFirstChild("HumanoidRootPart") then
+   if char and char:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("Humanoid") then
       local root = char.HumanoidRootPart
-      root.Velocity = Vector3.new(0, 0, 0)
+      local humanoid = char.Humanoid
+      
+      -- Congelamos momentáneamente las fuerzas físicas para evitar la muerte por caída/vacío
+      root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+      root.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+      
       task.wait(0.05)
       root.CFrame = targetCFrame
+      
+      -- Estabilizamos de nuevo tras el teletransporte
+      task.wait(0.05)
+      root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
    end
 end
 
@@ -173,7 +178,7 @@ TeleportTab:CreateButton({
 
 TeleportTab:CreateButton({
    Name = "Muscle King Gym (100 Rebirths)",
-   Callback/function()
+   Callback = function()
       safeTeleport(CFrame.new(-8630, 15, -5700))
    end,
 })

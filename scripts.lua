@@ -1,189 +1,81 @@
--- Cargamos la librería de interfaz (Rayfield)
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+-- LocalScript
 
-local Window = Rayfield:CreateWindow({
-   Name = ">Z4NG BSZ HUB< | Muscle Legends",
-   LoadingTitle = "Cargando Z4NG BSZ HUB...",
-   LoadingSubtitle = "Por Zangsu-BSZ",
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = "Z4ngHubConfig",
-      FileName = "MuscleLegends"
-   },
-   KeySystem = false
-})
+-- Services
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
 
---------------------------------------------------------------------------------
--- VARIABLES GLOBALES
---------------------------------------------------------------------------------
-getgenv().AutoFarm = false
-getgenv().AutoRebirth = false
-getgenv().AutoBrawl = false
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Parent = Players.LocalPlayer.PlayerGui
 
---------------------------------------------------------------------------------
--- PESTAÑA 1: DASHBOARD
---------------------------------------------------------------------------------
-local MainTab = Window:CreateTab("Dashboard", 4483362458)
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0.5, 0, 0.5, 0)
+frame.Position = UDim2.new(0.25, 0, 0.25, 0)
+frame.BackgroundColor3 = Color3.new(1, 1, 1)
+frame.Parent = gui
 
-MainTab:CreateSection("Estado del Script")
-MainTab:CreateLabel("Script optimizado anti BAC-6206 ✅")
+local label = Instance.new("TextLabel")
+label.Size = UDim2.new(1, 0, 1, 0)
+label.BackgroundTransparency = 1
+label.Text = "Farm Money Script"
+label.FontSize = Enum.FontSize.Size24
+label.Parent = frame
 
-MainTab:CreateButton({
-   Name = "Cerrar Interfaz",
-   Callback = function()
-      getgenv().AutoFarm = false
-      getgenv().AutoRebirth = false
-      getgenv().AutoBrawl = false
-      Rayfield:Destroy()
-   end,
-})
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0.5, 0, 0.2, 0)
+button.Position = UDim2.new(0.25, 0, 0.4, 0)
+button.BackgroundColor3 = Color3.new(0.5, 0.5, 0.5)
+button.Text = "Start Farming"
+button.Parent = frame
 
---------------------------------------------------------------------------------
--- PESTAÑA 2: AUTO FARM & REBIRTH (BYPASS BAC-6206)
---------------------------------------------------------------------------------
-local FarmTab = Window:CreateTab("Auto Farm", 4483362458)
+-- Variables
+local player = Players.LocalPlayer
+local cash = 0
 
-FarmTab:CreateSection("Entrenamiento Seguro")
-
-FarmTab:CreateToggle({
-   Name = "⚡ Auto Entrenar (Bypass Anticheat)",
-   CurrentValue = false,
-   Flag = "ToggleAutoFarm",
-   Callback = function(Value)
-      getgenv().AutoFarm = Value
-      
-      task.spawn(function()
-         while getgenv().AutoFarm do
-            task.wait(0.18) -- Intervalo seguro para evadir BAC-6206
-            
-            pcall(function()
-               local player = game.Players.LocalPlayer
-               local char = player.Character
-               
-               if char then
-                  local tool = char:FindFirstChildOfClass("Tool")
-                  
-                  if tool then
-                     -- Activa la herramienta equipada de manera nativa
-                     tool:Activate()
-                     
-                     -- Evento interno de la herramienta
-                     local muscleEvent = tool:FindFirstChild("muscleEvent") or char:FindFirstChild("muscleEvent")
-                     if muscleEvent then
-                        muscleEvent:FireServer("rep")
-                     end
-                  end
-               end
-            end)
-         end
-      end)
-   end,
-})
-
-FarmTab:CreateSection("Renacimientos Automáticos")
-
-FarmTab:CreateToggle({
-   Name = "🔄 Auto Rebirth",
-   CurrentValue = false,
-   Flag = "ToggleAutoRebirth",
-   Callback = function(Value)
-      getgenv().AutoRebirth = Value
-      
-      task.spawn(function()
-         while getgenv().AutoRebirth do
-            task.wait(1.5)
-            pcall(function()
-               local rEvents = game:GetService("ReplicatedStorage"):FindFirstChild("rEvents")
-               if rEvents and rEvents:FindFirstChild("rebirthRemote") then
-                  rEvents.rebirthRemote:InvokeServer("rebirthRequest")
-               end
-            end)
-         end
-      end)
-   end,
-})
-
-FarmTab:CreateToggle({
-   Name = "🥊 Auto Join Brawl",
-   CurrentValue = false,
-   Flag = "ToggleAutoBrawl",
-   Callback = function(Value)
-      getgenv().AutoBrawl = Value
-      
-      task.spawn(function()
-         while getgenv().AutoBrawl do
-            task.wait(2.5)
-            pcall(function()
-               local rEvents = game:GetService("ReplicatedStorage"):FindFirstChild("rEvents")
-               if rEvents and rEvents:FindFirstChild("brawlEvent") then
-                  rEvents.brawlEvent:FireServer("joinBrawl")
-               end
-            end)
-         end
-      end)
-   end,
-})
-
---------------------------------------------------------------------------------
--- PESTAÑA 3: TELEPORTS (ANTIKICK)
---------------------------------------------------------------------------------
-local TeleportTab = Window:CreateTab("Teleports", 4483362458)
-
-TeleportTab:CreateSection("Gimnasios")
-
-local function safeTeleport(targetCFrame)
-   pcall(function()
-      local char = game.Players.LocalPlayer.Character
-      if char and char:FindFirstChild("HumanoidRootPart") then
-         local root = char.HumanoidRootPart
-         root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-         root.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
-         task.wait(0.08)
-         root.CFrame = targetCFrame
-         task.wait(0.08)
-         root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-      end
-   end)
+-- Functions
+local function farmMoney()
+    while true do
+        wait(1)
+        -- Code to add money to the player's account
+        -- For example:
+        game.ReplicatedStorage.Events.AddCash:FireServer(100)
+        cash = cash + 100
+        label.Text = "Cash: " .. cash
+    end
 end
 
-TeleportTab:CreateButton({
-   Name = "Spawn Gym (Inicio)",
-   Callback = function()
-      safeTeleport(CFrame.new(0, 10, 0))
-   end,
-})
+local function stopFarming()
+    -- Code to stop farming money
+end
 
-TeleportTab:CreateButton({
-   Name = "Frost Gym (5 Rebirths)",
-   Callback = function()
-      safeTeleport(CFrame.new(-2598, 15, -406))
-   end,
-})
+-- Event Handlers
+button.MouseButton1Click:Connect(function()
+    if button.Text == "Start Farming" then
+        farmMoney()
+        button.Text = "Stop Farming"
+    else
+        --stopFarming()
+        button.Text = "Start Farming"
+    end
+end)
 
-TeleportTab:CreateButton({
-   Name = "Mythical Gym (15 Rebirths)",
-   Callback = function()
-      safeTeleport(CFrame.new(2250, 15, 1070))
-   end,
-})
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.Escape then
+        gui.Enabled = not gui.Enabled
+    end
+end)
 
-TeleportTab:CreateButton({
-   Name = "Eternal Gym (30 Rebirths)",
-   Callback = function()
-      safeTeleport(CFrame.new(-6730, 15, -1280))
-   end,
-})
+-- Tweening
+local function tweenObject(object, properties, time)
+    local tweenInfo = TweenInfo.new(time, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+    local tween = TweenService:Create(object, tweenInfo, properties)
+    tween:Play()
+end
 
-TeleportTab:CreateButton({
-   Name = "Legend Gym (60 Rebirths)",
-   Callback = function()
-      safeTeleport(CFrame.new(4612, 15, -3890))
-   end,
-})
-
-TeleportTab:CreateButton({
-   Name = "Muscle King Gym (100 Rebirths)",
-   Callback = function()
-      safeTeleport(CFrame.new(-8630, 15, -5700))
-   end,
-})
+-- Initialization
+gui.Enabled = false
+wait(1)
+gui.Enabled = true
+tweenObject(frame, { Position = UDim2.new(0.25, 0, 0.25, 0) }, 0.5)
